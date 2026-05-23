@@ -52,9 +52,10 @@ class ProductController {
         )
 
         try {
-            def savedProduct = productService.save(product)
-            if (savedProduct) {
-                respond savedProduct, [status: CREATED, view: "show"]
+            def result = productService.save(product)
+            if (result) {
+                // Como o salvamento agora é assíncrono via Kafka, retornamos 202 Accepted
+                respond result, [status: ACCEPTED]
             } else {
                 respond product.errors, status: UNPROCESSABLE_ENTITY
             }

@@ -44,6 +44,7 @@ grails:
 
 ---
 hibernate:
+    dialect: org.hibernate.dialect.PostgreSQLDialect
     cache:
         queries: false
         use_second_level_cache: false
@@ -60,6 +61,19 @@ environments:
         dataSource:
             dbCreate: update
             url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/productdb}
+
+        # Kafka - necessário para o fluxo Producer → Consumer salvar no banco
+        spring:
+            kafka:
+                bootstrap-servers: localhost:9092
+                consumer:
+                    group-id: product-group
+                    auto-offset-reset: earliest
+                    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+                    value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+                producer:
+                    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+                    value-serializer: org.apache.kafka.common.serialization.StringSerializer
     test:
         dataSource:
             dbCreate: update
@@ -86,3 +100,8 @@ environments:
                 testOnReturn: false
                 jdbcInterceptors: ConnectionState
                 defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+
+---
+# Porta da aplicação (para não conflitar com o pgAdmin que usa 8080)
+server:
+    port: 8081
