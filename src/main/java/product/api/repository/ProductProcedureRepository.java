@@ -94,14 +94,16 @@ public class ProductProcedureRepository {
      * @return ID gerado pelo banco de dados (via parâmetro INOUT)
      */
     public Long createProduct(String name, String description, BigDecimal price) {
-        MapSqlParameterSource params = new MapSqlParameterSource()
+        // Using 'var' (Java 10+) - Local Variable Type Inference
+        // Reduces verbosity while remaining fully type-safe.
+        var params = new MapSqlParameterSource()
                 .addValue("p_name", name)
                 .addValue("p_description", description)
                 .addValue("p_price", price)
                 .addValue("p_id", null);   // INOUT - the database will fill this value
 
-        // Executa a procedure
-        Map<String, Object> result = createCall.execute(params);
+        // Using 'var' again for the result map
+        var result = createCall.execute(params);
 
         // O Spring retorna os parâmetros OUT/INOUT no Map com o nome original
         Object id = result.get("p_id");

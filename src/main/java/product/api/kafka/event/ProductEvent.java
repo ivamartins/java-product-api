@@ -2,6 +2,14 @@ package product.api.kafka.event;
 
 import java.math.BigDecimal;
 
+/**
+ * This is a Record (introduced in Java 14, stable since Java 16).
+ *
+ * Records are a major modern Java feature.
+ * They drastically reduce boilerplate for data carrier classes.
+ *
+ * See MODERN_JAVA_FEATURES.md for a full explanation and interview talking points.
+ */
 public record ProductEvent(
         String eventType,
         Long productId,

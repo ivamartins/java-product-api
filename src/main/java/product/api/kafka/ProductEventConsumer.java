@@ -58,6 +58,9 @@ public class ProductEventConsumer {
             ProductEvent event = objectMapper.readValue(record.value(), ProductEvent.class);
 
             // Roteia para o método correto de acordo com o tipo de evento
+            // Using Switch Expression (Java 14+, stable since Java 17)
+            // This is much cleaner than the old switch statement.
+            // See MODERN_JAVA_FEATURES.md for interview explanation.
             switch (event.eventType()) {
                 case ProductEvent.EVENT_CREATED -> handleCreate(event);
                 case ProductEvent.EVENT_UPDATED -> handleUpdate(event);
