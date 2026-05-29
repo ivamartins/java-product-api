@@ -121,52 +121,21 @@ Main procedures:
 
 The consumer processes the event and calls the corresponding procedure.
 
-## Study Guide - What You Should Learn
+## Main Study Resource (Recommended)
 
-### 1. Event-Driven Architecture + Stored Procedures
+**The best and most complete place to study this project is:**
 
-This project implements a powerful pattern:
-- Write operations (CUD) **never** go directly to the database from the Service.
-- They publish an event to Kafka.
-- The Consumer receives the event and calls the Stored Procedure.
+→ **`STUDY_GUIDE.md`**
 
-**Educational advantages:**
-- Clear separation between "intention" and "execution".
-- Makes it easy to add complex validations inside the procedure (at the database level).
-- Simulates real-world distributed system scenarios.
+This file was created specifically for your focus areas:
 
-### 2. Key Files to Study
+- PL/pgSQL Stored Procedures (how to view, modify and study them)
+- Kafka integration (Producer, Consumer, configuration)
+- Key Spring Boot annotations and configurations
 
-| File                              | What to Study                                      |
-|-----------------------------------|----------------------------------------------------|
-| `db/schema.sql`                   | How to write PL/pgSQL procedures                   |
-| `ProductProcedureRepository.java` | How to call procedures from Java using `SimpleJdbcCall` |
-| `ProductEventConsumer.java`       | How to route events to different procedures        |
-| `ProductEventProducer.java`       | How to publish events cleanly                      |
-| `ProductService.java`             | How the Service only publishes events (no direct DB access for writes) |
+It contains detailed explanations of the full flow and practical instructions on how to inspect and debug everything while studying.
 
-### 3. Recommended Exercises
-
-1. Add an `updated_at` field to the table and update the procedures.
-2. Create a trigger that automatically populates `updated_at` on UPDATE.
-3. Add minimum price validation inside the `sp_update_product` procedure.
-4. Create a new event `PRODUCT_PRICE_CHANGED` and a specific procedure.
-5. Try replacing `SimpleJdbcCall` with manual `JdbcTemplate` + `CallableStatement`.
-
-### 4. How to inspect what's happening
-
-```bash
-# View application logs (Kafka events + procedure calls)
-./gradlew bootRun
-
-# Access PostgreSQL
-docker exec -it product-db psql -U postgres -d productdb
-
-# Inside psql:
-\df sp_*                    -- list procedures
-\sf sp_create_product       -- show procedure source code
-TABLE products;             -- view the data
-```
+Please read `STUDY_GUIDE.md` as your primary reference.
 
 ## Useful Commands
 

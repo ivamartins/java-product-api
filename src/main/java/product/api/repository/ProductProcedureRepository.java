@@ -16,31 +16,16 @@ import java.util.Map;
  * ProductProcedureRepository
  * =====================================================================
  *
- * This class is the **core of the study** in this project.
+ * This class is the **main bridge between Java and PL/pgSQL**.
  *
- * It is responsible for calling the PL/pgSQL Stored Procedures created
- * in PostgreSQL (file: src/main/resources/db/schema.sql).
+ * It uses Spring's SimpleJdbcCall to execute stored procedures.
  *
- * Important concepts you will learn here:
+ * Key things to study here:
+ * - How to declare and call PostgreSQL procedures from Java
+ * - Use of INOUT parameters
+ * - @PostConstruct for initialization after dependency injection
  *
- * 1. SimpleJdbcCall
- *    - The cleanest and most recommended way in Spring to call
- *      stored procedures in a typed manner.
- *
- * 2. Parameter Declaration
- *    - We use SqlParameter to declare name + JDBC type.
- *    - This avoids SQL Injection and type errors.
- *
- * 3. INOUT Parameter
- *    - In PostgreSQL, when a procedure returns a value (e.g. the generated ID),
- *      we use an INOUT parameter. Spring can retrieve this value after execution.
- *
- * 4. Separation of Responsibilities
- *    - All the code for "calling procedures" is isolated here.
- *    - The rest of the application (Service, Consumer) does not need to know SQL.
- *
- * Usage flow:
- *   Kafka Event → ProductEventConsumer → ProductProcedureRepository → Procedure in the Database
+ * Full explanation available in STUDY_GUIDE.md → Section 3 (PL/pgSQL)
  */
 @Repository
 public class ProductProcedureRepository {

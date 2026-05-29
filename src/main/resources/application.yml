@@ -5,7 +5,14 @@ spring:
   application:
     name: product-api
 
-  # Database - PostgreSQL
+  # =====================================================
+  # DATABASE CONFIGURATION
+  # =====================================================
+  # We use PostgreSQL.
+  # Important: ddl-auto is set to "none" because we control
+  # the schema and procedures manually via schema.sql.
+  # This is intentional for study purposes.
+  # =====================================================
   datasource:
     url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/productdb}
     username: ${POSTGRES_USER:postgres}
@@ -16,21 +23,41 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none          # We control schema via schema.sql
-    show-sql: true
+      ddl-auto: none          # We manage schema ourselves via schema.sql
+    show-sql: true            # Very useful while studying
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  # Initialize schema + PL/pgSQL procedures on startup (great for study)
+  # =====================================================
+  # SQL INITIALIZATION (Critical for PL/pgSQL study)
+  # =====================================================
+  # This section makes Spring Boot automatically execute
+  # src/main/resources/db/schema.sql on every startup.
+  #
+  # This is how the PL/pgSQL stored procedures are loaded.
+  # Great for development and studying.
+  #
+  # In real projects you should use Flyway or Liquibase instead.
+  # =====================================================
   sql:
     init:
       mode: always
       data-locations: classpath:db/schema.sql
       separator: ";"
 
-  # Kafka configuration
+  # =====================================================
+  # KAFKA CONFIGURATION
+  # =====================================================
+  # This is the central configuration for Kafka producer and consumer.
+  #
+  # bootstrap-servers: Where Kafka is running
+  # consumer.group-id: Consumer group name (important concept)
+  # auto-offset-reset: earliest = read old messages when starting
+  #
+  # See STUDY_GUIDE.md → Section 4 for detailed explanation.
+  # =====================================================
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
@@ -42,7 +69,9 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
-# Actuator (optional but useful)
+# =====================================================
+# ACTUATOR (optional)
+# =====================================================
 management:
   endpoints:
     web:

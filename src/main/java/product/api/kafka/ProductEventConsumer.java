@@ -14,22 +14,20 @@ import product.api.repository.ProductProcedureRepository;
  * ProductEventConsumer
  * =====================================================================
  *
- * Este consumidor escuta o tópico "product-events" e, dependendo do
- * event type, calls the corresponding stored procedure.
+ * This is one of the most important classes for study.
  *
- * Fluxo completo que você deve entender:
+ * It listens to Kafka messages and is responsible for executing
+ * PL/pgSQL stored procedures based on the received event.
  *
- * 1. Controller recebe requisição REST
- * 2. ProductService publishes an event to Kafka (via Producer)
- * 3. Este Consumer recebe o evento
- * 4. It decides which procedure to call (create / update / delete)
- * 5. Calls ProductProcedureRepository → which executes the PL/pgSQL
- * 6. O banco efetivamente cria/atualiza/deleta o registro
+ * Full flow (very important to understand):
+ *   REST Request → Controller → Service → Producer → Kafka
+ *                              → This Consumer → ProcedureRepository → PL/pgSQL Procedure
  *
- * Por que fazer assim?
- * - Desacoplamento (o serviço não toca direto no banco para mutações)
- * - Facilita auditoria, retry, e escalabilidade futura
- * - Excellent for studying event-driven architecture + database procedures
+ * Key Spring Annotation:
+ *   @KafkaListener → Tells Spring to call this method automatically
+ *                    when a message arrives in the topic.
+ *
+ * See the full detailed explanation in STUDY_GUIDE.md → Section 2 and 4.
  */
 @Component
 public class ProductEventConsumer {
