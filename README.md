@@ -1,206 +1,193 @@
-# Product API - Grails 7
+# Product API - Spring Boot + Kafka + PL/pgSQL
 
-API RESTful para gerenciamento de produtos com **Grails 7**, **GORM/Hibernate**, **PostgreSQL**, **Apache Kafka** e **Docker Compose**.
+API RESTful para gerenciamento de produtos com **Spring Boot 3**, **PostgreSQL + PL/pgSQL**, **Apache Kafka** e **Docker Compose**.
 
-Este projeto foi criado seguindo as melhores práticas do mercado para fins de estudo.
+Este projeto foi migrado de Grails para **Spring Boot Java puro** com o objetivo de estudar:
+
+- Integração Spring Boot + Kafka (event-driven)
+- Chamadas de **Stored Procedures PL/pgSQL** a partir do Java
+- Separação clara entre comandos (via Kafka) e consultas (via JPA)
 
 ## Tecnologias Utilizadas
 
-- **Grails 7.1.1** (baseado em Spring Boot 3)
-- **Java 17**
-- **PostgreSQL 16** (via Docker)
-- **Apache Kafka** + Zookeeper (via Docker)
-- **GORM** (Hibernate)
+- **Spring Boot 3.4.5** (Java 17)
+- **Spring Data JPA** + Hibernate
+- **PostgreSQL 16** + **PL/pgSQL** (Stored Procedures)
 - **Spring Kafka**
 - **Docker Compose**
+- **JdbcTemplate + SimpleJdbcCall** (para chamar procedures)
 
-## Requisitos
+## Conceito de Arquitetura (Importante para Estudo)
 
-- Java 17 ou superior
-- Docker + Docker Compose
-- IntelliJ IDEA (recomendado) ou qualquer IDE com suporte a Gradle
+```
+REST Controller
+      │
+      ▼
+ProductService
+      │
+      ├─► CUD (Create/Update/Delete) → ProductEventProducer → Kafka
+      │
+      └─► Reads (GET) → ProductJpaRepository (JPA)
+                              │
+                              ▼
+                    ProductEventConsumer
+                              │
+                              ▼
+                    ProductProcedureRepository
+                              │
+                              ▼
+                    sp_create_product / sp_update_product / sp_delete_product
+                              │
+                              ▼
+                         PostgreSQL (PL/pgSQL)
+```
 
-## Segurança (Importante!)
+**Fluxo de estudo recomendado:**
+- Todo Create/Update/Delete passa por **Kafka** e depois chama **Stored Procedure**.
+- Leitura é feita diretamente via JPA (padrão comum em sistemas reais).
 
-Este projeto foi preparado para ser publicado no GitHub sem expor credenciais.
+## Como Executar
 
-### Como funciona
-
-- As senhas e credenciais estão **externalizadas** usando variáveis de ambiente.
-- O arquivo `.env` **não deve nunca** ser commitado (já está no `.gitignore`).
-- O arquivo `.env.example` serve como modelo.
-
-### Configuração inicial (recomendado)
-
-1. Copie o arquivo de exemplo:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Edite o `.env` e troque as senhas (principalmente em produção).
-
-3. O `docker-compose.yml` e o `application.yml` vão ler automaticamente as variáveis do `.env`.
-
-### O que NUNCA deve ser commitado
-
-- `.env`
-- `.env.local`
-- Qualquer arquivo com senhas reais
-
-Se você já subiu algo sensível por acidente, use `git rm --cached` + force push ou rotacione as credenciais.
-
-## Como Executar o Projeto
-
-### 1. Subir os Containers (PostgreSQL + Kafka + pgAdmin)
-
-Na raiz do projeto, execute:
+### 1. Subir infraestrutura
 
 ```bash
 docker compose up -d
 ```
 
-Isso vai subir:
-- PostgreSQL na porta **5432**
-- Kafka na porta **9092**
-- pgAdmin na porta **8080**
-
-### 2. Rodar a Aplicação
-
-Você tem duas formas:
-
-**Usando Gradle (recomendado):**
+### 2. Rodar a aplicação
 
 ```bash
 ./gradlew bootRun
 ```
 
-**Ou usando o Grails Wrapper:**
+A aplicação sobe na porta **8081**.
 
-```bash
-./grailsw run-app
-```
+## Endpoints
 
-A aplicação vai subir na porta **8080**.
+| Método | Endpoint                  | Descrição                              |
+|--------|---------------------------|----------------------------------------|
+| POST   | `/api/products`           | Cria produto (via Kafka + Procedure)   |
+| PUT    | `/api/products/{id}`      | Atualiza produto (via Kafka + Procedure)|
+| DELETE | `/api/products/{id}`      | Remove produto (via Kafka + Procedure) |
+| GET    | `/api/products`           | Lista todos (via JPA)                  |
+| GET    | `/api/products/{id}`      | Busca por ID (via JPA)                 |
 
-### 3. Acessar a API
-
-Base URL: `http://localhost:8080/api/products`
-
-### Endpoints Disponíveis
-
-| Método | Endpoint                  | Descrição                     |
-|--------|---------------------------|-------------------------------|
-| GET    | `/api/products`           | Lista produtos (com paginação) |
-| GET    | `/api/products/{id}`      | Busca produto por ID          |
-| POST   | `/api/products`           | Cria novo produto             |
-| PUT    | `/api/products/{id}`      | Atualiza produto              |
-| DELETE | `/api/products/{id}`      | Remove produto                |
-
-#### Exemplo de Paginação
-
-```
-GET /api/products?max=5&offset=0
-```
-
-Resposta:
-
-```json
-{
-  "content": [...],
-  "totalElements": 27,
-  "page": 0,
-  "size": 5,
-  "totalPages": 6
-}
-```
-
-#### Exemplo de Criação de Produto
+Exemplo de criação:
 
 ```json
 POST /api/products
 {
   "name": "Notebook Dell",
-  "description": "Notebook com 16GB de RAM",
+  "description": "16GB RAM",
   "price": 4500.00
 }
 ```
 
-Ao criar um produto, um evento é publicado automaticamente no Kafka.
+## PL/pgSQL - Stored Procedures (Principal para Estudo)
+
+Os procedimentos estão em:
+
+```
+src/main/resources/db/schema.sql
+```
+
+Principais procedures:
+
+- `sp_create_product(name, description, price, INOUT id)`
+- `sp_update_product(id, name, description, price)`
+- `sp_delete_product(id)`
+
+### Como estudar as procedures
+
+1. Após subir o projeto, acesse o PostgreSQL:
+   ```bash
+   docker exec -it product-db psql -U postgres -d productdb
+   ```
+
+2. Liste as procedures:
+   ```sql
+   \df sp_*
+   ```
+
+3. Veja o código de uma procedure:
+   ```sql
+   \sf sp_create_product
+   ```
 
 ## Kafka
 
-- **Tópico:** `product-events`
-- Todo produto criado publica um evento `PRODUCT_CREATED`
+- Tópico: `product-events`
+- Eventos: `PRODUCT_CREATED`, `PRODUCT_UPDATED`, `PRODUCT_DELETED`
 
-Você pode consumir as mensagens usando o consumer já implementado (ele apenas loga no console da aplicação).
+O consumer processa o evento e chama a procedure correspondente.
 
-## Acesso ao Banco de Dados
+## Guia de Estudo - O que você deve aprender com este projeto
 
-### PostgreSQL
+### 1. Arquitetura Event-Driven + Stored Procedures
 
-- Host: `localhost:5432`
-- Banco: `productdb`
-- Usuário: `postgres`
-- Senha: `postgres`
+Este projeto implementa um padrão poderoso:
+- Operações de escrita (CUD) **nunca** vão direto no banco a partir do Service.
+- Elas publicam um evento no Kafka.
+- O Consumer recebe o evento e chama a Stored Procedure.
 
-### pgAdmin (Interface Web)
+**Vantagens didáticas:**
+- Você vê claramente a separação entre "intenção" e "execução".
+- Facilita adicionar validações complexas dentro da procedure (banco).
+- Simula cenários reais de sistemas distribuídos.
 
-- URL: http://localhost:8080
-- Email: `admin@admin.com`
-- Senha: `admin`
+### 2. Principais arquivos para estudar
 
-## Estrutura do Projeto
+| Arquivo | O que estudar |
+|---------|---------------|
+| `db/schema.sql` | Como escrever procedures PL/pgSQL |
+| `ProductProcedureRepository.java` | Como chamar procedures do Java com `SimpleJdbcCall` |
+| `ProductEventConsumer.java` | Como rotear eventos para diferentes procedures |
+| `ProductEventProducer.java` | Como publicar eventos de forma limpa |
+| `ProductService.java` | Como o Service só publica eventos (sem tocar no banco) |
 
+### 3. Exercícios Recomendados
+
+1. Adicione um campo `updated_at` na tabela e atualize as procedures.
+2. Crie uma trigger que popula automaticamente `updated_at` no UPDATE.
+3. Adicione validação de preço mínimo dentro da procedure `sp_update_product`.
+4. Crie um novo evento `PRODUCT_PRICE_CHANGED` e uma procedure específica.
+5. Tente trocar `SimpleJdbcCall` por `JdbcTemplate` + `CallableStatement` manualmente.
+
+### 4. Como inspecionar o que está acontecendo
+
+```bash
+# Ver logs da aplicação (eventos Kafka + chamadas de procedure)
+./gradlew bootRun
+
+# Acessar o PostgreSQL
+docker exec -it product-db psql -U postgres -d productdb
+
+# Dentro do psql:
+\df sp_*                    -- lista procedures
+\sf sp_create_product       -- mostra o código da procedure
+TABLE products;             -- vê os dados
 ```
-src/main/groovy/product/api/
-├── command/                 # Command Objects (validação de entrada)
-│   ├── ProductCreateCommand.groovy
-│   └── ProductUpdateCommand.groovy
-├── dto/                     # Objetos de resposta
-│   └── PagedResult.groovy
-├── kafka/                   # Producer e Consumer
-│   ├── ProductEventProducer.groovy
-│   └── ProductEventConsumer.groovy
-├── Product.groovy           # Domain (entidade)
-├── ProductController.groovy # REST Controller
-└── ProductService.groovy    # Service com regras de negócio
-```
 
-## Como Abrir no IntelliJ
+## Dicas de Estudo
 
-1. Abra o IntelliJ
-2. `File → Open`
-3. Selecione a pasta `product-api`
-4. Aguarde o Gradle sincronizar (primeira vez pode demorar)
-5. O projeto será reconhecido automaticamente
+- Experimente adicionar novos parâmetros nas procedures (ex: `updated_at`)
+- Adicione validações dentro das procedures (ex: preço mínimo)
+- Tente criar uma trigger que popula `created_at` automaticamente
+- Adicione um novo evento (ex: `PRODUCT_PRICE_CHANGED`)
 
 ## Comandos Úteis
 
 ```bash
-# Compilar o projeto
+# Build
 ./gradlew build
 
-# Rodar testes (quando houver)
+# Rodar testes
 ./gradlew test
-
-# Limpar e recompilar
-./gradlew clean build
 
 # Parar containers
 docker compose down
 ```
 
-## Observações para Estudo
-
-- O projeto usa **Command Objects** para validação de entrada (melhor prática)
-- O **Producer** está separado do Service (boa separação de responsabilidades)
-- A paginação retorna um objeto estruturado (`PagedResult`)
-- A integração com Kafka é feita de forma limpa e testável
-
 ---
 
-Desenvolvido para fins de estudo em Grails 7 + Kafka + PostgreSQL.
-```
-
-Obrigado por estudar com este projeto! Se quiser evoluir (adicionar testes, mais eventos no Kafka, autenticação, etc.), é só pedir.
+Projeto migrado para fins de estudo de **Spring Boot + Kafka + PL/pgSQL**.
