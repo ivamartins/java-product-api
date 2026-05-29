@@ -17,11 +17,11 @@ import java.util.List;
  *
  * Camada de serviço da aplicação.
  *
- * Importante para estudo:
+ * Important for study:
  *
  * - Métodos de escrita (create/update/delete) **não tocam diretamente** no banco.
- *   Eles apenas publicam eventos no Kafka.
- *   O Consumer é quem chama as stored procedures.
+ *   They only publish events to Kafka.
+ *   The Consumer is the one that calls the stored procedures.
  *
  * - Métodos de leitura (findAll/findById) usam JpaRepository normalmente.
  *   Isso demonstra um padrão comum: leituras diretas + escritas via eventos/procedures.
@@ -41,7 +41,7 @@ public class ProductService {
 
     @Transactional
     public void createProduct(String name, String description, BigDecimal price) {
-        // Publica o evento. O Consumer vai chamar sp_create_product
+        // Publishes the event. The Consumer will call sp_create_product
         producer.sendProductCreated(null, name, description, price);
     }
 

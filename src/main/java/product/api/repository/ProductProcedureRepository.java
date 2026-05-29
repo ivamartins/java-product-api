@@ -16,32 +16,31 @@ import java.util.Map;
  * ProductProcedureRepository
  * =====================================================================
  *
- * Esta classe é o **coração do estudo** deste projeto.
+ * This class is the **core of the study** in this project.
  *
- * Ela é responsável por chamar as Stored Procedures PL/pgSQL criadas
- * no PostgreSQL (arquivo: src/main/resources/db/schema.sql).
+ * It is responsible for calling the PL/pgSQL Stored Procedures created
+ * in PostgreSQL (file: src/main/resources/db/schema.sql).
  *
- * Conceitos importantes que você vai aprender aqui:
+ * Important concepts you will learn here:
  *
  * 1. SimpleJdbcCall
- *    - É a forma mais limpa e recomendada do Spring para chamar
- *      stored procedures de forma tipada.
+ *    - The cleanest and most recommended way in Spring to call
+ *      stored procedures in a typed manner.
  *
- * 2. Declaração de Parâmetros
- *    - Usamos SqlParameter para declarar nome + tipo JDBC.
- *    - Isso evita SQL Injection e erros de tipo.
+ * 2. Parameter Declaration
+ *    - We use SqlParameter to declare name + JDBC type.
+ *    - This avoids SQL Injection and type errors.
  *
- * 3. Parâmetro INOUT
- *    - No PostgreSQL, quando a procedure retorna um valor (ex: o ID gerado),
- *      usamos um parâmetro INOUT. O Spring consegue recuperar esse valor
- *      depois da execução.
+ * 3. INOUT Parameter
+ *    - In PostgreSQL, when a procedure returns a value (e.g. the generated ID),
+ *      we use an INOUT parameter. Spring can retrieve this value after execution.
  *
- * 4. Separação de responsabilidades
- *    - Todo o código de "chamar procedure" fica isolado aqui.
- *    - O resto da aplicação (Service, Consumer) não precisa saber SQL.
+ * 4. Separation of Responsibilities
+ *    - All the code for "calling procedures" is isolated here.
+ *    - The rest of the application (Service, Consumer) does not need to know SQL.
  *
- * Fluxo de uso:
- *   Kafka Event → ProductEventConsumer → ProductProcedureRepository → Procedure no Banco
+ * Usage flow:
+ *   Kafka Event → ProductEventConsumer → ProductProcedureRepository → Procedure in the Database
  */
 @Repository
 public class ProductProcedureRepository {
@@ -114,7 +113,7 @@ public class ProductProcedureRepository {
                 .addValue("p_name", name)
                 .addValue("p_description", description)
                 .addValue("p_price", price)
-                .addValue("p_id", null);   // INOUT - o banco vai preencher
+                .addValue("p_id", null);   // INOUT - the database will fill this value
 
         // Executa a procedure
         Map<String, Object> result = createCall.execute(params);

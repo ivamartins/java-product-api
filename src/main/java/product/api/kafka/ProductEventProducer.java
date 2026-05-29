@@ -15,7 +15,7 @@ import java.time.Instant;
  * ProductEventProducer
  * =====================================================================
  *
- * Responsável por publicar eventos de produto no Kafka.
+ * Responsible for publishing product events to Kafka.
  *
  * Eventos suportados:
  * - PRODUCT_CREATED
@@ -23,12 +23,12 @@ import java.time.Instant;
  * - PRODUCT_DELETED
  *
  * Esses eventos são consumidos pelo ProductEventConsumer, que por sua
- * vez chama as stored procedures no banco de dados.
+ * turn calls the stored procedures in the database.
  *
  * Padrão utilizado: Event-Driven Architecture (EDA)
  * - O Service não modifica o banco diretamente para operações de escrita.
- * - Ele apenas publica a intenção ("o que aconteceu").
- * - O Consumer é quem efetiva a mudança no banco via PL/pgSQL.
+ * - It only publishes the intention ("what happened").
+ * - The Consumer is the one that actually applies the change in the database via PL/pgSQL.
  */
 @Component
 public class ProductEventProducer {

@@ -2,27 +2,27 @@
 -- Product API - PL/pgSQL Study Scripts
 -- =====================================================================
 --
--- Este arquivo contém a estrutura do banco + Stored Procedures.
+-- This file contains the database structure + Stored Procedures.
 --
--- Objetivo didático:
---   Ensinar como criar e chamar procedures do PostgreSQL a partir do Java.
+-- Educational objective:
+--   Teach how to create and call PostgreSQL stored procedures from Java.
 --
--- Como o Spring Boot carrega este arquivo:
---   Em application.yml está configurado:
+-- How Spring Boot loads this file:
+--   In application.yml the following is configured:
 --     spring.sql.init.mode=always
 --     spring.sql.init.data-locations=classpath:db/schema.sql
 --
--- Isso faz com que o Spring execute este script toda vez que a aplicação sobe
--- (útil durante estudos, em produção use Flyway ou Liquibase).
+-- This makes Spring execute this script every time the application starts
+-- (useful during studies; in production use Flyway or Liquibase).
 --
 -- =====================================================================
 
--- Remove procedures antigas para permitir recriação limpa durante estudo
+-- Remove old procedures to allow clean recreation during study
 DROP PROCEDURE IF EXISTS sp_create_product(VARCHAR, VARCHAR, NUMERIC, INOUT BIGINT);
 DROP PROCEDURE IF EXISTS sp_update_product(BIGINT, VARCHAR, VARCHAR, NUMERIC);
 DROP PROCEDURE IF EXISTS sp_delete_product(BIGINT);
 
--- Cria a tabela de produtos (se não existir)
+-- Create the products table (if it does not exist)
 CREATE TABLE IF NOT EXISTS products (
     id          BIGSERIAL PRIMARY KEY,
     name        VARCHAR(255) NOT NULL,
@@ -34,16 +34,16 @@ CREATE TABLE IF NOT EXISTS products (
 -- =====================================================================
 -- PROCEDURE: sp_create_product
 -- =====================================================================
--- Cria um novo produto e retorna o ID gerado através do parâmetro INOUT.
+-- Creates a new product and returns the generated ID through the INOUT parameter.
 --
--- Parâmetros:
---   p_name        → nome do produto (obrigatório)
---   p_description → descrição (opcional)
---   p_price       → preço (obrigatório, > 0)
---   p_id          → INOUT: o banco preenche com o ID gerado
+-- Parameters:
+--   p_name        → product name (required)
+--   p_description → description (optional)
+--   p_price       → price (required, > 0)
+--   p_id          → INOUT: the database fills this with the generated ID
 --
--- Exemplo de chamada no psql:
---   CALL sp_create_product('Mouse', 'Sem fio', 89.90, NULL);
+-- Example call in psql:
+--   CALL sp_create_product('Mouse', 'Wireless', 89.90, NULL);
 -- =====================================================================
 CREATE OR REPLACE PROCEDURE sp_create_product(
     IN  p_name        VARCHAR,
@@ -65,8 +65,8 @@ $$;
 -- =====================================================================
 -- PROCEDURE: sp_update_product
 -- =====================================================================
--- Atualiza um produto existente.
--- Lança exceção se o produto não for encontrado.
+-- Updates an existing product.
+-- Raises an exception if the product is not found.
 -- =====================================================================
 CREATE OR REPLACE PROCEDURE sp_update_product(
     IN p_id          BIGINT,
@@ -95,8 +95,8 @@ $$;
 -- =====================================================================
 -- PROCEDURE: sp_delete_product
 -- =====================================================================
--- Remove um produto do banco.
--- Lança exceção se o ID não existir.
+-- Deletes a product from the database.
+-- Raises an exception if the ID does not exist.
 -- =====================================================================
 CREATE OR REPLACE PROCEDURE sp_delete_product(
     IN p_id BIGINT
@@ -115,19 +115,19 @@ END;
 $$;
 
 -- =====================================================================
--- Dicas de estudo
+-- Study Tips
 -- =====================================================================
--- 1. Veja o código das procedures:
+-- 1. View the source code of the procedures:
 --    \sf sp_create_product
 --
--- 2. Liste todas as procedures:
+-- 2. List all procedures:
 --    \df sp_*
 --
--- 3. Teste manualmente:
---    CALL sp_create_product('Teclado', 'Mecânico', 250.00, NULL);
+-- 3. Test manually:
+--    CALL sp_create_product('Keyboard', 'Mechanical', 250.00, NULL);
 --    SELECT * FROM products;
 --
--- 4. Tente criar uma trigger que atualiza automaticamente um campo
---    "updated_at" quando sp_update_product for chamada.
+-- 4. Try creating a trigger that automatically updates an "updated_at" field
+--    when sp_update_product is called.
 --
 -- =====================================================================

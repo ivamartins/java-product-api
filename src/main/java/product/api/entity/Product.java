@@ -5,14 +5,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * Entidade JPA que representa a tabela "products".
+ * JPA entity that represents the "products" table.
  *
- * Observação importante:
- * - Esta entidade é usada principalmente para **leituras** (GET).
- * - As operações de escrita (Create/Update/Delete) são feitas
- *   através das Stored Procedures chamadas pelo Consumer do Kafka.
+ * Important note:
+ * - This entity is mainly used for **reads** (GET).
+ * - Write operations (Create/Update/Delete) are performed
+ *   through Stored Procedures called by the Kafka Consumer.
  *
- * Isso é intencional para fins de estudo.
+ * This is intentional for study purposes.
  */
 @Entity
 @Table(name = "products")

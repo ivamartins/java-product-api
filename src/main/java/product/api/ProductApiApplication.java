@@ -4,17 +4,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Ponto de entrada da aplicação Spring Boot.
+ * Entry point of the Spring Boot application.
  *
- * @SpringBootApplication faz várias coisas automaticamente:
- * - Habilita auto-configuration
- * - Ativa @ComponentScan no pacote atual e subpacotes
- * - Permite usar @SpringBootApplication em vez de várias anotações
+ * @SpringBootApplication does several things automatically:
+ * - Enables auto-configuration
+ * - Activates @ComponentScan on the current package and subpackages
+ * - Allows using @SpringBootApplication instead of multiple annotations
  *
- * Esta aplicação demonstra:
- * - Integração com Kafka (Producer + Consumer)
- * - Uso de Stored Procedures PL/pgSQL via SimpleJdbcCall
- * - Separação entre escrita (via eventos) e leitura (via JPA)
+ * This application demonstrates:
+ * - Integration with Kafka (Producer + Consumer)
+ * - Usage of PL/pgSQL Stored Procedures via SimpleJdbcCall
+ * - Separation between writing (via events) and reading (via JPA)
  */
 @SpringBootApplication
 public class ProductApiApplication {

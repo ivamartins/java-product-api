@@ -20,7 +20,7 @@ public class ProductController {
         this.productService = productService;
     }
 
-    // CUD operations go through Kafka → PL/pgSQL procedures
+    // CUD operations go through Kafka → PL/pgSQL procedures (all in English)
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody ProductCreateRequest request) {
         productService.createProduct(
