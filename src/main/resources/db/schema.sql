@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS products (
     price       NUMERIC(19,2) NOT NULL CHECK (price > 0),
     created_at  TIMESTAMP DEFAULT NOW()
 );
+^
 
 -- =====================================================================
 -- PROCEDURE: sp_create_product
@@ -131,3 +132,4 @@ $$;
 --    when sp_update_product is called.
 --
 -- =====================================================================
+^

@@ -19,16 +19,17 @@ import java.util.List;
  *
  * Important for study:
  *
- * - Métodos de escrita (create/update/delete) **não tocam diretamente** no banco.
+ * - Write methods (create/update/delete) do not touch the database directly.
  *   They only publish events to Kafka.
  *   The Consumer is the one that calls the stored procedures.
  *
- * - Métodos de leitura (findAll/findById) usam JpaRepository normalmente.
- *   Isso demonstra um padrão comum: leituras diretas + escritas via eventos/procedures.
+ * - Read methods (findAll/findById) use JpaRepository normally.
+ *   This demonstrates a common pattern: direct reads + writes via events/procedures.
  */
 @Service
 public class ProductService {
 
+    // Constructor injection (modern Spring recommendation since 4.3)
     private final ProductEventProducer producer;
     private final ProductJpaRepository jpaRepository;
 
@@ -37,7 +38,7 @@ public class ProductService {
         this.jpaRepository = jpaRepository;
     }
 
-    // ==================== ESCRITA VIA KAFKA + PL/pgSQL ====================
+    // ==================== WRITE OPERATIONS (via Kafka + PL/pgSQL) ====================
 
     @Transactional
     public void createProduct(String name, String description, BigDecimal price) {
@@ -55,7 +56,7 @@ public class ProductService {
         producer.sendProductDeleted(id);
     }
 
-    // ==================== LEITURA DIRETA VIA JPA ====================
+    // ==================== READ OPERATIONS (direct via JPA) ====================
 
     public List<ProductResponse> findAll() {
         return jpaRepository.findAll().stream()

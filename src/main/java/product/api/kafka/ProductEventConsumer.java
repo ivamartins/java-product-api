@@ -47,6 +47,7 @@ public class ProductEventConsumer {
      * Method automatically called by Spring Kafka when a message arrives
      * uma mensagem no tópico.
      */
+    // @KafkaListener: Spring Kafka annotation that registers this method as a message consumer.
     @KafkaListener(topics = TOPIC, groupId = "product-group")
     public void consume(ConsumerRecord<String, String> record) {
         log.info("=== Kafka Event Received ===");
@@ -54,13 +55,17 @@ public class ProductEventConsumer {
                 record.topic(), record.partition(), record.offset(), record.key());
 
         try {
+            // Pattern matching for instanceof (Java 14+)
+            Object rawValue = record.value();
+            if (rawValue instanceof String json) {
+                log.debug("Raw JSON received: {}", json);
+            }
+
             // Desserializa o JSON para o objeto ProductEvent
             ProductEvent event = objectMapper.readValue(record.value(), ProductEvent.class);
 
             // Roteia para o método correto de acordo com o tipo de evento
-            // Using Switch Expression (Java 14+, stable since Java 17)
-            // This is much cleaner than the old switch statement.
-            // See MODERN_JAVA_FEATURES.md for interview explanation.
+            // Switch expression (Java 14+)
             switch (event.eventType()) {
                 case ProductEvent.EVENT_CREATED -> handleCreate(event);
                 case ProductEvent.EVENT_UPDATED -> handleUpdate(event);

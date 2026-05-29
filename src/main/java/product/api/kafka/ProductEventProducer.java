@@ -26,7 +26,7 @@ import java.time.Instant;
  * turn calls the stored procedures in the database.
  *
  * Padrão utilizado: Event-Driven Architecture (EDA)
- * - O Service não modifica o banco diretamente para operações de escrita.
+ * - The Service does not modify the database directly for write operations.
  * - It only publishes the intention ("what happened").
  * - The Consumer is the one that actually applies the change in the database via PL/pgSQL.
  */
@@ -36,6 +36,7 @@ public class ProductEventProducer {
     private static final Logger log = LoggerFactory.getLogger(ProductEventProducer.class);
     private static final String TOPIC = "product-events";
 
+    // KafkaTemplate: Spring's high-level API for sending messages to Kafka topics.
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 

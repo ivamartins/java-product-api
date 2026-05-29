@@ -23,7 +23,7 @@ This file + the comments in the code will help you answer this question confiden
 |--------------------------------------|--------------|---------------------------------------------------|-------------------------|
 | **Records**                          | 14 (stable 16) | `ProductEvent.java`                              | Data carrier classes, immutability, less boilerplate |
 | **Switch Expressions**               | 14 (stable 17) | `ProductEventConsumer.java`                      | Cleaner, less error-prone than old switch |
-| **Pattern Matching for `instanceof`** | 14 (stable 16) | Can be added in future exercises                 | More readable type checks |
+| **Pattern Matching for `instanceof`** | 14 (stable 16) | `ProductEventConsumer.java`                      | More readable type checks |
 | **`var` keyword** (Local Variable Type Inference) | 10     | Used in several places                           | Reduces verbosity without losing readability |
 | **Text Blocks**                      | 15           | Not heavily used yet (good for future exercises) | Multi-line strings |
 | **`@PostConstruct`** + modern DI   | -            | `ProductProcedureRepository.java`                | Modern Spring + Java initialization |
@@ -66,7 +66,33 @@ public record ProductEvent(
 
 ---
 
-## 2. Switch Expressions (Java 14+)
+## 2. Pattern Matching for `instanceof` (Java 14+)
+
+**Old way (Java 8):**
+```java
+if (value instanceof String) {
+    String json = (String) value;
+    log.info("JSON: {}", json);
+}
+```
+
+**New way (this project):**
+```java
+if (rawValue instanceof String json) {
+    log.debug("Raw JSON received: {}", json);
+}
+```
+
+**Benefits:**
+- Combines type check + variable declaration in one expression
+- Much cleaner and less error-prone
+- Reduces casting boilerplate
+
+**File to study:** `src/main/java/product/api/kafka/ProductEventConsumer.java`
+
+---
+
+## 3. Switch Expressions (Java 14+)
 
 **Old way (Java 8):**
 ```java
@@ -101,7 +127,7 @@ switch (event.eventType()) {
 
 ---
 
-## 3. `var` Keyword - Local Variable Type Inference (Java 10)
+## 4. `var` Keyword - Local Variable Type Inference (Java 10)
 
 **Old way:**
 ```java
@@ -147,6 +173,61 @@ Good answer structure:
 > 3. **`var`** — I used local variable type inference in several places to reduce verbosity while keeping the code readable.
 >
 > These features helped me write more concise, safer, and modern code."
+
+---
+
+## 5. Spring Boot - Key Annotations and Configurations Used
+
+This project uses several Spring Boot features. Below are the most relevant ones with their purpose.
+
+### Important Annotations
+
+| Annotation                  | Location                              | Purpose |
+|-----------------------------|---------------------------------------|-------|
+| `@SpringBootApplication`    | `ProductApiApplication.java`          | Enables auto-configuration, component scanning, and acts as the application entry point. |
+| `@RestController`           | `ProductController.java`              | Marks the class as a REST controller (combines `@Controller` + `@ResponseBody`). |
+| `@RequestMapping` / `@GetMapping` / `@PostMapping` | `ProductController.java` | Maps HTTP requests to controller methods. |
+| `@Valid`                    | Controller methods                    | Triggers validation on request DTOs (Bean Validation). |
+| `@Service`                  | `ProductService.java`                 | Marks the class as a service component (business logic layer). |
+| `@Repository`               | `ProductProcedureRepository.java`     | Marks the class as a data access component. |
+| `@KafkaListener`            | `ProductEventConsumer.java`           | Declares a method as a Kafka message listener. Spring will call it automatically when messages arrive. |
+| `@Transactional`            | `ProductService.java`                 | Ensures the method runs within a transaction boundary. |
+| `@PostConstruct`            | `ProductProcedureRepository.java`     | Runs the annotated method after dependency injection is complete (used here to initialize `SimpleJdbcCall` objects). |
+
+### Key Configuration (application.yml)
+
+- `spring.datasource` → Database connection settings (PostgreSQL).
+- `spring.jpa.hibernate.ddl-auto: none` → We manage schema manually via `schema.sql` (intentional for this study project).
+- `spring.sql.init.mode: always` → Automatically executes `db/schema.sql` on startup (loads tables + PL/pgSQL procedures).
+- `spring.kafka` section → Central Kafka producer/consumer configuration (bootstrap servers, serializers, consumer group, etc.).
+
+See the file `src/main/resources/application.yml` for the actual values.
+
+---
+
+## 6. Kafka - Configuration and Annotations
+
+### Where Kafka is Configured
+
+- **Main configuration**: `src/main/resources/application.yml` → `spring.kafka` section.
+- **Producer**: `ProductEventProducer.java` (uses `KafkaTemplate`).
+- **Consumer**: `ProductEventConsumer.java` (uses `@KafkaListener`).
+
+### Main Annotations
+
+- `@KafkaListener(topics = "...", groupId = "...")`  
+  → The most important annotation in this project.  
+  It tells Spring Kafka to subscribe to a topic and call the method whenever a message is received.
+
+- `KafkaTemplate<String, String>` (injected in Producer)  
+  → Used to send messages to Kafka topics.
+
+### What the Configuration Controls
+
+- `bootstrap-servers`: Address of the Kafka broker.
+- `consumer.group-id`: Consumer group (allows multiple instances to share the load).
+- `auto-offset-reset: earliest`: When starting, read messages from the beginning if no offset exists.
+- Serializers/Deserializers: How keys and values are converted to/from bytes.
 
 ---
 
