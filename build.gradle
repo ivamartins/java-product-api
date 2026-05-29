@@ -38,6 +38,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
 
+    // Explicit Mockito (better control on Java 17+)
+    testImplementation 'org.mockito:mockito-core:5.12.0'
+
     // Modern integration testing (good practice)
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:postgresql'
@@ -72,9 +75,13 @@ if (project.hasProperty('skipEnvLoading')) {
 // Good practice configuration for running tests with Mockito on Java 17+
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
+
+    // Required for Mockito + Java 17+
     jvmArgs += [
         '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
         '--add-opens', 'java.base/java.util=ALL-UNNAMED',
-        '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED'
+        '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.io=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.net=ALL-UNNAMED'
     ]
 }

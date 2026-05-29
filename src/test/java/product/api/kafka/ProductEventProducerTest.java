@@ -31,7 +31,8 @@ class ProductEventProducerTest {
 
     @BeforeEach
     void setUp() {
-        producer = new ProductEventProducer(kafkaTemplate, null); // ObjectMapper not needed for these tests
+        // Provide a real ObjectMapper (required by the producer)
+        producer = new ProductEventProducer(kafkaTemplate, new com.fasterxml.jackson.databind.ObjectMapper());
 
         when(kafkaTemplate.send(any(), any(), any()))
                 .thenReturn(new CompletableFuture<>());
