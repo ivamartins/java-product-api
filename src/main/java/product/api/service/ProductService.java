@@ -42,8 +42,15 @@ public class ProductService {
 
     @Transactional
     public void createProduct(String name, String description, BigDecimal price) {
-        // Publishes the event. The Consumer will call sp_create_product
-        producer.sendProductCreated(null, name, description, price);
+        // Modern Java 11+: String.isBlank() instead of name == null || name.trim().isEmpty()
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Product name is required");
+        }
+
+        // Modern Java 10+: var for local variables
+        var eventPrice = price;
+
+        producer.sendProductCreated(null, name, description, eventPrice);
     }
 
     @Transactional

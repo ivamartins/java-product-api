@@ -83,8 +83,9 @@ public class ProductEventProducer {
 
     private void sendEvent(ProductEvent event) {
         try {
-            String json = objectMapper.writeValueAsString(event);
-            String key = event.productId() != null ? event.productId().toString() : event.name();
+            // Modern Java 10+: var
+            var json = objectMapper.writeValueAsString(event);
+            var key = event.productId() != null ? event.productId().toString() : event.name();
 
             log.info(">>> [PRODUCER] Publishing event → Topic: {}, Key: {}, Type: {}",
                     TOPIC, key, event.eventType());

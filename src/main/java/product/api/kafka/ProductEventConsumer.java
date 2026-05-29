@@ -35,6 +35,16 @@ public class ProductEventConsumer {
     private static final Logger log = LoggerFactory.getLogger(ProductEventConsumer.class);
     private static final String TOPIC = "product-events";
 
+    // Modern Java 15+: Text Block (multi-line string)
+    private static final String SAMPLE_KAFKA_MESSAGE = """
+        {
+          "eventType": "PRODUCT_CREATED",
+          "productId": null,
+          "name": "Example Product",
+          "price": 199.90
+        }
+        """;
+
     private final ProductProcedureRepository procedureRepository;
     private final ObjectMapper objectMapper;
 

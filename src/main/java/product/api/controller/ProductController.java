@@ -22,11 +22,10 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody ProductCreateRequest request) {
-        productService.createProduct(
-                request.getName(),
-                request.getDescription(),
-                request.getPrice()
-        );
+        // Modern Java 10+: var
+        var name = request.getName();
+
+        productService.createProduct(name, request.getDescription(), request.getPrice());
         return ResponseEntity.accepted().build();
     }
 
