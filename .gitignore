@@ -4,12 +4,6 @@
 # Log files
 *.log
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
 # Package Files
 *.jar
 *.war
@@ -46,14 +40,6 @@ out/
 .springBeans
 .sts4-cache
 
-# NetBeans
-nbproject/private/
-nbbuild/
-dist/
-nbdist/
-nbactions.xml
-nb-configuration.xml
-
 # VS Code
 .vscode/
 
@@ -66,36 +52,6 @@ nb-configuration.xml
 ehthumbs.db
 Thumbs.db
 
-# Grails specific
-/target/
-/out/
-/logs/
-/tmp/
-/work/
-/grails-app/views/*/generated/
-/grails-app/views/*/*.class
-/grails-app/views/*/*.groovy
-/grails-app/i18n/messages_*.properties
-/grails-app/assets/compiled/
-/web-app/WEB-INF/
-/web-app/plugins/
-/web-app/WEB-INF/classes/
-/web-app/WEB-INF/tld/
-/web-app/WEB-INF/lib/
-/web-app/WEB-INF/grails-app/
-/web-app/WEB-INF/spring/
-/web-app/WEB-INF/classes/
-/web-app/plugins/
-/web-app/WEB-INF/classes/grails/
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# Asset pipeline
-/assets/compiled/
-
 # Environment & Secrets
 .env
 .env.local
@@ -105,11 +61,11 @@ Thumbs.db
 secrets/
 credentials/
 
-# Database
+# Database local files
 *.db
 *.sqlite
 
-# Kafka / Zookeeper data (if mounted locally)
+# Kafka / Zookeeper local data (if mounted)
 kafka-data/
 zookeeper-data/
 
