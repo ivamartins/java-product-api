@@ -37,6 +37,11 @@ dependencies {
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+    // Modern integration testing (good practice)
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'org.testcontainers:kafka'
 }
 
 tasks.named('test') {
@@ -62,4 +67,14 @@ if (project.hasProperty('skipEnvLoading')) {
         }
         println ".env file loaded into system properties"
     }
+}
+
+// Good practice configuration for running tests with Mockito on Java 17+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    jvmArgs += [
+        '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED'
+    ]
 }

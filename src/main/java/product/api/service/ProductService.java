@@ -71,10 +71,10 @@ public class ProductService {
                 .toList();
     }
 
-    public ProductResponse findById(Long id) {
+    // Modern Java 8+: Using Optional for better null safety (instead of returning null)
+    public java.util.Optional<ProductResponse> findById(Long id) {
         return jpaRepository.findById(id)
-                .map(this::toResponse)
-                .orElse(null);
+                .map(this::toResponse);
     }
 
     private ProductResponse toResponse(Product p) {

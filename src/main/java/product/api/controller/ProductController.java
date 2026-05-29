@@ -48,9 +48,11 @@ public class ProductController {
         return ResponseEntity.ok(productService.findAll());
     }
 
+    // Modern Java 8+: Using Optional from Service (no more null checks)
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> findById(@PathVariable Long id) {
-        ProductResponse product = productService.findById(id);
-        return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
+        return productService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
