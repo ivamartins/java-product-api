@@ -50,7 +50,7 @@ tasks.named('test') {
 
 // =============================================
 // Carrega automaticamente o arquivo .env
-// (executado após o parsing do buildscript)
+// (executed after buildscript parsing)
 // =============================================
 if (project.hasProperty('skipEnvLoading')) {
     println "Skipping .env loading (skipEnvLoading=true)"
