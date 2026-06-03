@@ -62,6 +62,38 @@ docker compose up -d
 
 The application starts on port **8081**.
 
+## Running the tests
+
+**Português:**
+
+```bash
+./gradlew test
+```
+
+Ou forçar execução limpa:
+
+```bash
+./gradlew clean test
+```
+
+Existem testes unitários básicos confiáveis para Service, Controller e Producer (usam mocks). Alguns testes de Kafka (embedded) e IT com Testcontainers (Postgres) podem ser pulados automaticamente se Docker não estiver disponível — o comando principal ainda retorna sucesso.
+
+**English:**
+
+```bash
+./gradlew test
+```
+
+Or force a clean run:
+
+```bash
+./gradlew clean test
+```
+
+There are reliable basic unit tests for Service, Controller and Producer (mock-based). Some Kafka (embedded) and Testcontainers (Postgres) tests may be automatically skipped if Docker is not available — the overall command still succeeds.
+
+See the "Useful Commands" section below for the full list.
+
 ## Endpoints
 
 | Method | Endpoint                  | Description                              |
