@@ -46,7 +46,23 @@ ProductService
 - All Create/Update/Delete operations go through **Kafka** and then call a **Stored Procedure**.
 - Reads are done directly via JPA (common pattern in real systems).
 
-## How to Run
+## How to Run / Como rodar a aplicação
+
+### Português
+
+1. Inicie a infraestrutura (Postgres + Kafka via Docker):
+   ```bash
+   docker compose up -d
+   ```
+
+2. Rode a aplicação:
+   ```bash
+   ./gradlew bootRun
+   ```
+
+A aplicação sobe na porta **8081**.
+
+### English
 
 ### 1. Start the infrastructure
 
