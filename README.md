@@ -1,5 +1,9 @@
 # java-product-api
 
+[![CI](https://github.com/ivamartins/java-product-api/actions/workflows/ci.yml/badge.svg)](https://github.com/ivamartins/java-product-api/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-17%2B-blue)](https://openjdk.org/)
+
 > Part of the **Code Solutions Java Modernization Framework** product line. REST API reference with Spring Boot 3, PostgreSQL + PL/pgSQL, and Apache Kafka.
 
 RESTful API for product management using **Spring Boot 3**, **PostgreSQL + PL/pgSQL**, **Apache Kafka**, and **Docker Compose**.
